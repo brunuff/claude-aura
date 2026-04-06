@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "claude-aura": {
+      "command": "bash",
+      "args": ["-c", "PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo $PWD) && exec node \"$PROJECT_ROOT/dist/server.js\""]
+    }
+  }
+}
