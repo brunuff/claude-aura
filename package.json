@@ -1,0 +1,22 @@
+{
+  "name": "claude-aura",
+  "version": "0.1.0",
+  "description": "Andon board for human-AI interaction — making the invisible visible",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc && cp -r src/public dist/public",
+    "start": "node dist/server.js",
+    "dev": "tsc && cp -r src/public dist/public && node dist/server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "express": "^4.21.0",
+    "chokidar": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  }
+}

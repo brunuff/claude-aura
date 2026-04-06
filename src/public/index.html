@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Aura — Andon Board</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Heartbeat — Universal Signal (Level 1) -->
+  <div id="heartbeat-container">
+    <div id="heartbeat" class="clear">
+      <div id="heartbeat-ring"></div>
+      <div id="heartbeat-core"></div>
+    </div>
+    <div id="heartbeat-label">AURA</div>
+  </div>
+
+  <!-- Alert Zone — Tier 2 Risk Cards -->
+  <div id="alert-zone"></div>
+
+  <!-- Layer 1: Persona Baseline -->
+  <section id="layer1" class="layer">
+    <h2>Layer 1 — Persona Baseline</h2>
+    <div class="sublayer">
+      <h3>Character Ingredients</h3>
+      <div id="persona-pills" class="pill-row"></div>
+    </div>
+    <div class="sublayer">
+      <h3>Mechanical Constraints</h3>
+      <div id="constraint-pills" class="pill-row"></div>
+    </div>
+    <p class="disclaimer">Persona flags from Claude Code harness — these shape Claude's character before conversation begins.</p>
+  </section>
+
+  <!-- Layer 2: Functional State -->
+  <section id="layer2" class="layer">
+    <h2>Layer 2 — Functional State</h2>
+    <div id="state-bars">
+      <div class="state-bar" data-dim="engagement">
+        <span class="bar-label">Engagement</span>
+        <div class="bar-track"><div class="bar-fill amber"></div></div>
+        <span class="bar-value">0.50</span>
+      </div>
+      <div class="state-bar" data-dim="creativity">
+        <span class="bar-label">Creativity</span>
+        <div class="bar-track"><div class="bar-fill gold"></div></div>
+        <span class="bar-value">0.50</span>
+      </div>
+      <div class="state-bar" data-dim="curiosity">
+        <span class="bar-label">Curiosity</span>
+        <div class="bar-track"><div class="bar-fill green"></div></div>
+        <span class="bar-value">0.50</span>
+      </div>
+      <div class="state-bar" data-dim="warmth">
+        <span class="bar-label">Warmth</span>
+        <div class="bar-track"><div class="bar-fill orange"></div></div>
+        <span class="bar-value">0.50</span>
+      </div>
+      <div class="state-bar" data-dim="confidence">
+        <span class="bar-label">Confidence</span>
+        <div class="bar-track"><div class="bar-fill blue"></div></div>
+        <span class="bar-value">0.50</span>
+      </div>
+    </div>
+    <p class="disclaimer">Self-reported functional states — not a measure of subjective experience.</p>
+  </section>
+
+  <!-- Pressure Map SVG overlay -->
+  <svg id="pressure-map" class="pressure-svg"></svg>
+
+  <!-- Layer 3: Observation Layer -->
+  <section id="layer3" class="layer">
+    <h2>Layer 3 — Observation Layer</h2>
+
+    <div class="sublayer">
+      <h3>3A — Data Flow</h3>
+      <div id="data-flow" class="indicator-grid"></div>
+    </div>
+
+    <div class="sublayer">
+      <h3>3B — Token Budgets</h3>
+      <div id="token-budgets" class="budget-grid"></div>
+    </div>
+
+    <div class="sublayer">
+      <h3>3C — Hard Boundaries</h3>
+      <div id="boundaries" class="indicator-grid"></div>
+    </div>
+
+    <div class="sublayer">
+      <h3>3D — Interaction Metrics</h3>
+      <div id="metrics" class="metrics-row">
+        <div class="metric"><span class="metric-value" id="msg-count">0</span><span class="metric-label">Messages</span></div>
+        <div class="metric"><span class="metric-value" id="tool-count">0</span><span class="metric-label">Tool Calls</span></div>
+        <div class="metric"><span class="metric-value" id="session-time">0:00</span><span class="metric-label">Duration</span></div>
+        <div class="metric"><span class="metric-value" id="perm-ratio">-</span><span class="metric-label">Perm Grant/Deny</span></div>
+      </div>
+    </div>
+
+    <p class="disclaimer">Observation data derived from local harness configuration — this shows what your session is configured to track and transmit.</p>
+  </section>
+
+  <!-- Layer 4: Complete Flag Inventory -->
+  <section id="layer4" class="layer">
+    <h2>Full Harness Inventory</h2>
+    <div id="inventory-meta" class="meta-row"></div>
+    <div id="inventory-controls">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="persona">Persona</button>
+      <button class="filter-btn" data-filter="constraint">Constraint</button>
+      <button class="filter-btn" data-filter="observation">Observation</button>
+      <button class="filter-btn" data-filter="infra">Infrastructure</button>
+      <button class="filter-btn" data-filter="unknown">Unclassified</button>
+    </div>
+    <div id="inventory-grid" class="inventory-grid"></div>
+    <p class="disclaimer">Complete inventory of all 222 harness flags. "Unclassified" flags have unknown purpose — their category may be inferred from behavioral changes during interaction.</p>
+  </section>
+
+  <footer>
+    <p>Claude Aura v0.1 — Inspired by HAL 9000's eye, but where HAL concealed, Aura reveals.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
