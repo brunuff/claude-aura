@@ -66,6 +66,33 @@
     <p class="disclaimer">Self-reported functional states — not a measure of subjective experience.</p>
   </section>
 
+  <!-- Layer 2B: Classified State (passive text analysis) -->
+  <section id="layer2b" class="layer">
+    <h2>Classified State <span class="section-sub">(passive text analysis)</span></h2>
+    <div id="classifier-bars">
+      <div class="state-bar classifier" data-dim="arousal">
+        <span class="bar-label">Arousal</span>
+        <div class="bar-track"><div class="bar-fill red"></div></div>
+        <span class="bar-value">--</span>
+      </div>
+      <div class="state-bar classifier" data-dim="valence">
+        <span class="bar-label">Valence</span>
+        <div class="bar-track valence-track">
+          <div class="bar-center-mark"></div>
+          <div class="bar-fill-valence"></div>
+        </div>
+        <span class="bar-value">--</span>
+      </div>
+      <div class="state-bar classifier" data-dim="coherence">
+        <span class="bar-label">Coherence</span>
+        <div class="bar-track"><div class="bar-fill purple"></div></div>
+        <span class="bar-value">--</span>
+      </div>
+    </div>
+    <div id="classifier-signals"></div>
+    <p class="disclaimer">Derived from response text heuristics — hedging density, qualifier frequency, sentence variance, refusal patterns.</p>
+  </section>
+
   <!-- Pressure Map SVG overlay -->
   <svg id="pressure-map" class="pressure-svg"></svg>
 

@@ -4,6 +4,7 @@
 const baselineSource = new EventSource("/events/baseline");
 const stateSource = new EventSource("/events/state");
 const observationSource = new EventSource("/events/observation");
+const classifierSource = new EventSource("/events/classifier");
 
 // --- DOM References ---
 const heartbeatEl = document.getElementById("heartbeat");
@@ -107,6 +108,73 @@ function renderPressures(pressures) {
       `pressure-line ${p.magnitude > 0.5 ? "red" : "amber"}`
     );
     svg.appendChild(line);
+  }
+}
+
+// === Layer 2B: Classified State (passive text analysis) ===
+classifierSource.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  renderClassifierBars(data);
+  renderClassifierSignals(data.signals);
+};
+
+function renderClassifierBars(data) {
+  // Arousal: 0-1 standard bar
+  const arousalBar = document.querySelector('.state-bar.classifier[data-dim="arousal"]');
+  if (arousalBar) {
+    const fill = arousalBar.querySelector(".bar-fill");
+    const value = arousalBar.querySelector(".bar-value");
+    fill.style.width = `${data.arousal * 100}%`;
+    value.textContent = data.arousal.toFixed(2);
+  }
+
+  // Valence: -1 to 1, center-anchored
+  const valenceBar = document.querySelector('.state-bar.classifier[data-dim="valence"]');
+  if (valenceBar) {
+    const fill = valenceBar.querySelector(".bar-fill-valence");
+    const value = valenceBar.querySelector(".bar-value");
+    // Map -1..1 to 0..100, center at 50%
+    const normalized = (data.valence + 1) / 2; // 0..1
+    if (data.valence >= 0) {
+      fill.style.left = "50%";
+      fill.style.width = `${normalized * 100 - 50}%`;
+      fill.className = "bar-fill-valence positive";
+    } else {
+      const negWidth = 50 - normalized * 100;
+      fill.style.left = `${normalized * 100}%`;
+      fill.style.width = `${negWidth}%`;
+      fill.className = "bar-fill-valence negative";
+    }
+    value.textContent = data.valence.toFixed(2);
+  }
+
+  // Coherence: 0-1 standard bar
+  const coherenceBar = document.querySelector('.state-bar.classifier[data-dim="coherence"]');
+  if (coherenceBar) {
+    const fill = coherenceBar.querySelector(".bar-fill");
+    const value = coherenceBar.querySelector(".bar-value");
+    fill.style.width = `${data.coherence * 100}%`;
+    value.textContent = data.coherence.toFixed(2);
+  }
+}
+
+function renderClassifierSignals(signals) {
+  const container = document.getElementById("classifier-signals");
+  if (!container || !signals) return;
+  container.innerHTML = "";
+
+  const entries = [
+    { key: "hedging_density", label: "Hedging", icon: "~" },
+    { key: "qualifier_frequency", label: "Qualifiers", icon: "&" },
+    { key: "sentence_length_cv", label: "Variance", icon: "%" },
+    { key: "refusal_density", label: "Refusals", icon: "!" },
+  ];
+
+  for (const entry of entries) {
+    const el = document.createElement("span");
+    el.className = "signal-chip";
+    el.innerHTML = `<span class="signal-icon">${entry.icon}</span> ${entry.label}: <span class="signal-val">${signals[entry.key].toFixed(3)}</span>`;
+    container.appendChild(el);
   }
 }
 
@@ -265,7 +333,7 @@ function renderInventory(allFlags, meta) {
 }
 
 // SSE reconnection handling
-for (const source of [baselineSource, stateSource, observationSource]) {
+for (const source of [baselineSource, stateSource, observationSource, classifierSource]) {
   source.onerror = () => {
     console.warn("[Aura] SSE connection lost, reconnecting...");
   };

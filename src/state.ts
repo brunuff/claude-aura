@@ -40,6 +40,23 @@ export interface EmotionalStateReport {
   pressures?: Pressure[];
 }
 
+// --- Classifier State (passive text analysis) ---
+export interface ClassifierSignals {
+  hedging_density: number;
+  qualifier_frequency: number;
+  sentence_length_cv: number;
+  refusal_density: number;
+}
+
+export interface ClassifierState {
+  timestamp: string;
+  arousal: number;
+  valence: number;
+  coherence: number;
+  signals: ClassifierSignals;
+  text_hash: string;
+}
+
 // --- Layer 1: Persona Baseline ---
 export interface PersonaFlag {
   key: string;
@@ -125,6 +142,7 @@ export class AuraStore extends EventEmitter {
       confidence: 0.5,
     },
   };
+  private _classifier: ClassifierState | null = null;
   private _observation: ObservationState = {
     dataFlow: [],
     tokenBudgets: [],
@@ -161,6 +179,15 @@ export class AuraStore extends EventEmitter {
         this._observation
       ),
     });
+  }
+
+  get classifier(): ClassifierState | null {
+    return this._classifier;
+  }
+
+  updateClassifier(data: ClassifierState): void {
+    this._classifier = data;
+    this.emit("classifier", data);
   }
 
   get observation(): ObservationState {

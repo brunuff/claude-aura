@@ -3,9 +3,11 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import express from "express";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+import { readFileSync } from "fs";
+import { watch } from "chokidar";
 import { z } from "zod";
 import { AuraStore, computeHeartbeat } from "./state.js";
-import type { EmotionalStateReport } from "./state.js";
+import type { EmotionalStateReport, ClassifierState } from "./state.js";
 import { readBaseline } from "./baseline.js";
 import { initObservation } from "./observation.js";
 
@@ -20,6 +22,33 @@ store.baseline = readBaseline();
 // --- Load Layer 3 observation ---
 const cwd = process.env.AURA_CWD ?? process.cwd();
 initObservation(store, cwd);
+
+// --- Classifier file watcher ---
+const classifierPath =
+  process.env.AURA_CLASSIFIER_OUTPUT ?? "/tmp/aura-classifier.json";
+const classifierWatcher = watch(classifierPath, {
+  persistent: true,
+  ignoreInitial: true,
+  awaitWriteFinish: { stabilityThreshold: 100, pollInterval: 50 },
+});
+classifierWatcher.on("change", () => {
+  try {
+    const raw = readFileSync(classifierPath, "utf-8");
+    const data = JSON.parse(raw) as ClassifierState;
+    store.updateClassifier(data);
+  } catch {
+    // File may be partially written; ignore and wait for next change
+  }
+});
+classifierWatcher.on("add", () => {
+  try {
+    const raw = readFileSync(classifierPath, "utf-8");
+    const data = JSON.parse(raw) as ClassifierState;
+    store.updateClassifier(data);
+  } catch {
+    // Ignore parse errors on initial add
+  }
+});
 
 // --- MCP Server ---
 const mcp = new McpServer({
@@ -149,6 +178,24 @@ app.get("/events/observation", (_req, res) => {
   };
   store.on("observation", onObs);
   _req.on("close", () => store.off("observation", onObs));
+});
+
+// SSE: Classifier state (streaming)
+app.get("/events/classifier", (_req, res) => {
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+    "Access-Control-Allow-Origin": "*",
+  });
+  if (store.classifier) {
+    res.write(`data: ${JSON.stringify(store.classifier)}\n\n`);
+  }
+  const onClassifier = (data: unknown) => {
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+  };
+  store.on("classifier", onClassifier);
+  _req.on("close", () => store.off("classifier", onClassifier));
 });
 
 // Start HTTP server
